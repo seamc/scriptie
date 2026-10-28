@@ -76,7 +76,7 @@ grid.header("",head, repeat:true),
 /// Large heading to separate arcs, acts etc.
 #let part(name) = {
     counter("scriptie-part").step()
-  [#context [\===== #(translations.at(text.lang, default: translations.default).part-title) #(counter("scriptie-part").get().at(0)): #name =====]<scriptie-part>]
+  [#context [\===== #[#(translations.at(text.lang, default: translations.default).part-title) #(counter("scriptie-part").get().at(0)): ]<scriptie-part-number>#name =====]<scriptie-part>]
 }
 
 /// Transition
@@ -96,6 +96,7 @@ grid.header("",head, repeat:true),
 
 #let _default-cap = (character:true,scene:true,transition:true)
 #let _default-bold = (character:false,scene:true,scene-number:true,transition:true,title:true)
+#let _default-numbered = (scene:true,page:true,part:true)
 /// Format the script
 #let script(document,
   size:(x:6in,y:9in),
@@ -106,7 +107,9 @@ grid.header("",head, repeat:true),
   bold: (:),
   font:"Courier Prime",
   page-numbering: (dx:-1in,dy:0.8in),
-  page-size: ("a4",)
+  page-size: ("a4",),
+  numbering: true,
+  numbered: (:)
 ) = {
   let margin = {
     let x = 100%-size.x;
@@ -119,6 +122,7 @@ grid.header("",head, repeat:true),
   indent.parenthetical.at(0) -= indent.dialogue.at(0)
   let capitalize = (:.._default-cap, ..capitalize)
   let bold = (:.._default-bold, ..bold)
+  let numbered = (:.._default-numbered, ..numbered).pairs().map(((k, v)) => (k, numbering and v)).to-dict()
 
   set page(margin: margin, ..page-size)
   let textsettings = (size:12pt, top-edge: 0.8em, bottom-edge: -0.2em, font:font, weight:"regular")
@@ -127,15 +131,15 @@ grid.header("",head, repeat:true),
   show heading: set text(..textsettings)
   show heading: set block(spacing: 0pt)
   show raw: set text(..textsettings)
-  set page(foreground: if page-numbering != none {place(right,context [#counter(page).get().first().],..page-numbering,)})
+  set page(foreground: if numbered.page and page-numbering != none {place(right,context [#counter(page).get().first().],..page-numbering,)})
 
   let id = it => it
   let scene_num-sel = selector(<scriptie-scene_num_r>).or(<scriptie-scene_num_l>)
   show <scriptie-parenthetical>: it => block(sticky: true, grid(columns: indent.parenthetical,[],it)) //bug #5296
   show <scriptie-speaker>: it => grid(columns:indent.character,[],it)
   show <scriptie-dialogue>: set grid(columns:indent.dialogue)
-  show <scriptie-scene_num_r>: it => if scene-numbering.right != none {place(dx:100%+scene-numbering.right,it)} else {[]}
-  show <scriptie-scene_num_l>: it => if scene-numbering.left != none {place(dx:-scene-numbering.left,it)} else {[]}
+  show <scriptie-scene_num_r>: it => if numbered.scene and scene-numbering.right != none {place(dx:100%+scene-numbering.right,it)} else {[]}
+  show <scriptie-scene_num_l>: it => if numbered.scene and scene-numbering.left != none {place(dx:-scene-numbering.left,it)} else {[]}
   show scene_num-sel:           if       bold.scene-number {strong} else {id}
   show <scriptie-title>:        if       bold.title        {strong} else {id}
   show <scriptie-speaker>:      if       bold.character    {strong} else {id}
@@ -144,6 +148,7 @@ grid.header("",head, repeat:true),
   show <scriptie-logline>:      if capitalize.scene        {upper}  else {id}
   show <scriptie-transition>:   if       bold.transition   {strong} else {id}
   show <scriptie-transition>:   if capitalize.transition   {upper}  else {id}
+  show <scriptie-part-number>: it => if numbered.part {it} else {[]}
   show <scriptie-part>: it => {
     pagebreak(weak: true)
     align(center, block(above:1in,below:1in, it))

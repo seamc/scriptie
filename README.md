@@ -47,6 +47,32 @@ The user writes the best screenplay the world has ever seen.
 There's a demo showcasing all the functionalities [with the quick syntax](https://github.com/KauriP/scriptie/blob/a16bf15324099edc3df34ebfe5262ee2a6e0a3ae/demo-quick.typ)
 and [without the quick syntax](https://github.com/KauriP/scriptie/blob/a16bf15324099edc3df34ebfe5262ee2a6e0a3ae/demo.typ).
 
+# Numbering
+
+Scene numbers, page numbers and part numbers are all shown by default.
+Two options of `script` control them:
+
+- `numbering` (default `true`): master switch. `false` turns off all numbering.
+- `numbered` (default `(scene: true, page: true, part: true)`): turns individual kinds of numbering on or off. Only the keys you give are changed.
+
+```typst
+#show: script.with(numbering: false)              // no numbering at all
+#show: script.with(numbered: (scene: false))      // page numbers only
+#show: script.with(numbered: (page: false))       // scene numbers only
+#show: script.with(numbered: (part: false))       // "===== Name =====" instead of "===== Part 1: Name ====="
+```
+
+`numbering: false` takes precedence over anything set in `numbered`.
+The position of the numbers is set separately with `scene-numbering` (offsets of the left and right scene numbers; `none` hides that side) and `page-numbering` (offset of the page number; `none` hides it).
+
+When using the quick syntax, pass the options to `qscript` instead, since it calls `script` itself:
+
+```typst
+#show: qscript.with(numbered: (scene: false))
+```
+
+Don't apply both `qscript` and `script` to the same document — the formatting would be applied twice, which causes errors such as `pagebreaks are not allowed inside of containers`.
+
 # Possible issues
 
 The preferred font to use with this package is [Courier Prime](https://quoteunquoteapps.com/courierprime/) or Courier.

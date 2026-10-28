@@ -1,5 +1,5 @@
 #import "scriptie.typ":*
-#show: qscript
+#show: qscript.with(numbered: (scene: false))
 
 #titlepage(
   title:[Lorem],
