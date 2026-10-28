@@ -73,6 +73,41 @@ When using the quick syntax, pass the options to `qscript` instead, since it cal
 
 Don't apply both `qscript` and `script` to the same document — the formatting would be applied twice, which causes errors such as `pagebreaks are not allowed inside of containers`.
 
+# Dual dialogue
+
+Two characters speaking at the same time can be placed side by side with `dual-dialogue`.
+Each side is an ordinary dialogue, and the pair is kept together on one page.
+
+```typst
+#dual-dialogue(
+  dialogue([Alice], "O.S.")[#pa[shouting] Get out of my kitchen!],
+  dialogue([Bob])[No! I was here first.],
+)
+```
+
+With the quick syntax, start two consecutive dialogue lines with `+`:
+
+```typst
++ / ALICE (O.S.): (shouting) Get out of my kitchen!
++ / BOB: No! I was here first.
+```
+
+A `+` list with any other number of items is left as an ordinary numbered list.
+`#dual-dialogue[/ ALICE: ...][/ BOB: ...]` also works with the quick syntax.
+
+The indentation within each column is set with the `dual-indent` option of `script`.
+Like `indent`, each entry is `(offset, width)`, measured from the left edge of the column; `gutter` is the space between the columns.
+Only the keys you give are changed. The defaults are:
+
+```typst
+#show: script.with(dual-indent: (
+  character: (0.75in, 1fr),
+  parenthetical: (0.4in, 1fr),
+  dialogue: (0in, 1fr),
+  gutter: 0.3in,
+))
+```
+
 # Possible issues
 
 The preferred font to use with this package is [Courier Prime](https://quoteunquoteapps.com/courierprime/) or Courier.
@@ -88,7 +123,7 @@ For the web app, you should drop the `.ttf` files (unzipped from the linked down
   - [x] Which elements should be UPPER CASE
   - [x] Which elements should be numbered
   - [x] Customise margins & other geometry
-- [ ] Implement side-by-side dialog
+- [x] Implement side-by-side dialog
 - [x] Implement
   - ```
     TEXT SIGNS

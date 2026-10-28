@@ -1,5 +1,5 @@
 #import "scriptie.typ":*
-// #show: qscript.with(numbered: (scene: false))
+#show: qscript
 
 #titlepage(
   title:[Lorem],
@@ -27,6 +27,9 @@ aliquam quaerat.
   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
   (Lorem ipsum.)
   Lorem ipsum dolor sit amet.
+
++ / Speaker 1 (O.S): (Lorem.) Lorem ipsum dolor sit amet, consectetur adipiscing elit.
++ / Speaker 2: Lorem ipsum dolor sit amet.
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
 do eiusmod tempor incididunt ut labore et dolore magnam

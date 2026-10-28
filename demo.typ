@@ -1,5 +1,5 @@
 #import "scriptie.typ":*
-// #show: script.with(numbered: (scene: false))
+#show: script
 
 #titlepage(
   title:[Lorem],
@@ -29,6 +29,11 @@ aliquam quaerat.
             eiusmod tempor incididunt ut labore
             et dolore magnam aliquam quaerat. #pa[Lorem.]
             Lorem ipsum dolor sit amet.]
+
+#dual-dialogue(
+  dialogue([Speaker 1])[#pa[Lorem.] Lorem ipsum dolor sit amet, consectetur adipiscing elit.],
+  dialogue([Speaker 2])[Lorem ipsum dolor sit amet.],
+)
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
 do eiusmod tempor incididunt ut labore et dolore magnam

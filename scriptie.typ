@@ -66,6 +66,14 @@ grid.header("",head, repeat:true),
 )<scriptie-dialogue>]
 }
 
+/// Dual dialogue: two characters speaking simultaneously, side by side. Each side is a dialogue
+#let dual-dialogue(left, right) = {
+  let s = state("scriptie-dual", false)
+  s.update(true)
+  [#grid(left, right)<scriptie-dual>]
+  s.update(false)
+}
+
 /// Scene
 #let scene(logline) = {
     counter("scriptie-scene").step()
@@ -97,11 +105,13 @@ grid.header("",head, repeat:true),
 #let _default-cap = (character:true,scene:true,transition:true)
 #let _default-bold = (character:false,scene:true,scene-number:true,transition:true,title:true)
 #let _default-numbered = (scene:true,page:true,part:true)
+#let _default-dual-indent = (character:(0.75in,1fr),parenthetical:(0.4in,1fr),dialogue:(0in,1fr),gutter:0.3in)
 /// Format the script
 #let script(document,
   size:(x:6in,y:9in),
   margin:(left:3fr,right:2fr,top:1fr,bottom:1fr),
   indent:(character:(2in,4in),parenthetical:(1.5in,2.5in),dialogue:(1in,3.5in)),
+  dual-indent: (:),
   scene-numbering: (left:2cm,right:1cm),
   capitalize: (:),
   bold: (:),
@@ -120,6 +130,10 @@ grid.header("",head, repeat:true),
   }
   indent.character.at(0) -= indent.dialogue.at(0)
   indent.parenthetical.at(0) -= indent.dialogue.at(0)
+  let dual-indent = (:.._default-dual-indent, ..dual-indent)
+  dual-indent.character.at(0) -= dual-indent.dialogue.at(0)
+  dual-indent.parenthetical.at(0) -= dual-indent.dialogue.at(0)
+  let current-indent() = if state("scriptie-dual", false).get() {dual-indent} else {indent}
   let capitalize = (:.._default-cap, ..capitalize)
   let bold = (:.._default-bold, ..bold)
   let numbered = (:.._default-numbered, ..numbered).pairs().map(((k, v)) => (k, numbering and v)).to-dict()
@@ -135,9 +149,10 @@ grid.header("",head, repeat:true),
 
   let id = it => it
   let scene_num-sel = selector(<scriptie-scene_num_r>).or(<scriptie-scene_num_l>)
-  show <scriptie-parenthetical>: it => block(sticky: true, grid(columns: indent.parenthetical,[],it)) //bug #5296
-  show <scriptie-speaker>: it => grid(columns:indent.character,[],it)
-  show <scriptie-dialogue>: set grid(columns:indent.dialogue)
+  show <scriptie-parenthetical>: it => context block(sticky: true, grid(columns: current-indent().parenthetical,[],it)) //bug #5296
+  show <scriptie-speaker>: it => context grid(columns:current-indent().character,[],it)
+  show <scriptie-dialogue>: it => context {set grid(columns:current-indent().dialogue); it}
+  show <scriptie-dual>: it => block(breakable: false, grid(columns: (1fr, 1fr), column-gutter: dual-indent.gutter, ..it.children))
   show <scriptie-scene_num_r>: it => if numbered.scene and scene-numbering.right != none {place(dx:100%+scene-numbering.right,it)} else {[]}
   show <scriptie-scene_num_l>: it => if numbered.scene and scene-numbering.left != none {place(dx:-scene-numbering.left,it)} else {[]}
   show scene_num-sel:           if       bold.scene-number {strong} else {id}
@@ -162,6 +177,7 @@ grid.header("",head, repeat:true),
 /// = Part
 /// == Scene
 /// /Character (0 or 1 extensions): (with any number of parentheticals) Line.
+/// + /Character: Line. (two consecutive lines like this form a dual dialogue)
 /// ```
 /// PRE-FORMATTED
 ///      TEXT
@@ -170,6 +186,7 @@ grid.header("",head, repeat:true),
   ..args
   ) = {
   show list.item: it => transition(it.body)
+  show enum: it => if it.children.len() == 2 {dual-dialogue(..it.children.map(c => c.body))} else {it}
   show terms.item: it => {
     let s = state("scriptie-parse-exts",none)
     s.update(none)
