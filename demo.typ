@@ -1,5 +1,5 @@
 #import "scriptie.typ":*
-#show: script.with(numbered: (scene: false))
+// #show: script.with(numbered: (scene: false))
 
 #titlepage(
   title:[Lorem],
